@@ -5,6 +5,8 @@ var actions = {
   delete: 4
 };
 
+var active_users = new Array();
+
 var in_queue = new Array();
 var fetched = 0;
 var next_fetch = 200;
@@ -17,6 +19,7 @@ function fetch() {
   results.forEach(function(element, index, array) {
     if(typeof(queue[element.mid]) == "undefined") {
       in_queue[element.mid] = new Array();
+      active_users.push(new Member(element.mid));
     }
     in_queue[element.mid].push(element.payload);
   });
@@ -54,7 +57,7 @@ function Member(mid) {
     return send(this.mid, msg);
   }
   this.gets = function() {
-    return in_queue.shift();
+    return in_queue[this.mid].shift();
   }
   this.run = function() {
     try {

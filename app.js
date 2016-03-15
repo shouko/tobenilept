@@ -51,13 +51,10 @@ msg.main_menu += ["訂閱公車資訊", "查詢訂閱紀錄", "更改訂閱紀�
 function Member(mid) {
   this.mid = mid;
   this.puts = function(msg) {
-
+    return send(this.mid, msg);
   }
   this.gets = function() {
     return in_queue.shift();
-  }
-  this.send = function(msg) {
-    return send(this.mid, msg);
   }
   this.run = function() {
     try {

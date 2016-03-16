@@ -1,3 +1,5 @@
+var request = require('request');
+
 var actions = {
   add: 1,
   query: 2,
@@ -36,12 +38,6 @@ function schedule_fetch(wait) {
   }, wait);
 }
 
-var out_queue = new Array();
-
-function send(mid, msg) {
-  out_queue.push([mid, msg]);
-}
-
 var msg = {
   main_menu: "歡迎使用臺北市政府 LINE 訂閱公車到站資訊服務\n"
 }
@@ -53,34 +49,37 @@ msg.main_menu += ["訂閱公車資訊", "查詢訂閱紀錄", "更改訂閱紀�
 
 function Member(mid) {
   this.mid = mid;
-  this.puts = function(msg) {
-    return send(this.mid, msg);
-  }
-  this.gets = function() {
-    return in_queue[this.mid].shift();
-  }
-  this.run = function() {
-    try {
-      var action;
-      while(1) {
-        puts(msg.main_menu);
-        action = gets();
-        if([1, 2, 3, 4].indexOf(action) == -1) {
-          break;
-        }
-      }
-      switch(action) {
-        case actions.add: {
-        }
-        case actions.query: {
-        }
-        case actions.modify: {
-        }
-        case actions.delete: {
-        }
-      }
-    } catch(UserInputTimeoutException) {
-
-    }
-  };
 }
+
+Member.prototype.gets = function() {
+  return in_queue[this.mid].shift();
+};
+
+Member.prototype.puts = function(msg) {
+
+};
+
+Member.prototype.run = function() {
+  try {
+    var action;
+    while(1) {
+      puts(msg.main_menu);
+      action = gets();
+      if([1, 2, 3, 4].indexOf(action) == -1) {
+        break;
+      }
+    }
+    switch(action) {
+      case actions.add: {
+      }
+      case actions.query: {
+      }
+      case actions.modify: {
+      }
+      case actions.delete: {
+      }
+    }
+  } catch(UserInputTimeoutException) {
+
+  }
+};

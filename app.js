@@ -107,7 +107,7 @@ Member.prototype.puts = function(msg) {
   var data = {
     to: [ this.mid ],
     toChannel: 1383378250,
-    eventType: 138311608800106203,
+    eventType: "138311608800106203",
     content: {
       contentType: 1,
       toType: 1,

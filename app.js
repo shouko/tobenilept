@@ -133,7 +133,7 @@ Member.prototype.puts = function(msg) {
     if(err) {
       console.log(Date(), err, data);
     }
-    console.log(Date(), response);
+    console.log(Date(), body.messageId, body.timestamp);
   });
 };
 

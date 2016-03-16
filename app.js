@@ -117,7 +117,7 @@ msg.main_menu += ["訂閱公車資訊", "查詢訂閱紀錄", "更改訂閱紀�
 function Member(mid) {
   this.mid = mid;
   this.params = [];
-  this.next = actions.welcome;
+  this.set_next(actions.welcome;
   console.log(Date(), "create", mid);
 }
 
@@ -161,6 +161,14 @@ Member.prototype.add = function() {
   this.puts('您的訂閱已完成');
 }
 
+Member.prototype.set_next = function(action) {
+  this.next = action;
+}
+
+Member.prototype.set_next_ra = function(action) {
+  this.next_ra = action;
+}
+
 Member.prototype.run = function() {
   try {
     console.log(Date(), this.mid, this.next, this.next_ra);
@@ -168,36 +176,37 @@ Member.prototype.run = function() {
       case actions.welcome: {
         in_queue[this.mid].shift();
         this.puts(msg.main_menu);
-        this.next_ra = actions.welcome_navigate;
-        this.next = actions.ask_param;
+        this.set_next_ra(actions.welcome_navigate);
+        this.set_next(actions.ask_param);
         break;
       }
       case actions.welcome_navigate: {
-        this.next = params[0];
+        console.log("params are", params);
+        this.set_next(params[0]);
         break;
       }
       case actions.add_route: {
         this.puts(response_text.ask_route);
-        this.next_ra = actions.add_station
-        this.next = actions.ask_param;
+        this.set_next_ra(actions.add_station);
+        this.set_next(actions.ask_param);
         break;
       }
       case actions.add_station: {
         this.puts(response_text.ask_station);
-        this.next_ra = actions.add_time
-        this.next = actions.ask_param;
+        this.set_next_ra(actions.add_time);
+        this.set_next(actions.ask_param);
         break;
       }
       case actions.add_time: {
         this.puts(response_text.ask_time);
-        this.next_ra = actions.add_interval
-        this.next = actions.ask_param;
+        this.set_next_ra(actions.add_interval);
+        this.set_next(actions.ask_param);
         break;
       }
       case actions.add_interval: {
         this.puts(response_text.ask_interval);
-        this.next_ra = actions.add_interval
-        this.next = actions.ask_param;
+        this.set_next_ra(actions.add_interval);
+        this.set_next(actions.ask_param);
         break;
       }
       case actions.add_proceed: {
@@ -212,8 +221,8 @@ Member.prototype.run = function() {
       case actions.modify: {
         this.query();
         this.puts("請輸入欲更改內容之項目編號：\n到站名稱：請輸入 1\n通知訊息時間：請輸入 2\n通知訊息間隔：請輸入 3");
-        this.next_ra = actions.modify_navigate
-        this.next = actions.ask_param;
+        this.set_next_ra(actions.modify_navigate);
+        this.set_next(actions.ask_param);
         break;
       }
       case actions.modify_navigate: {
@@ -223,20 +232,20 @@ Member.prototype.run = function() {
       }
       case actions.modify_station: {
         this.puts(response_text.ask_station)
-        this.next_ra = actions.modify_proceed;
-        this.next = actions.ask_param;
+        this.set_next_ra(actions.modify_proceed);
+        this.set_next(actions.ask_param);
         break;
       }
       case actions.modify_time: {
         this.puts(response_text.ask_time)
-        this.next_ra = actions.modify_proceed;
-        this.next = actions.ask_param;
+        this.set_next_ra(actions.modify_proceed);
+        this.set_next(actions.ask_param);
         break;
       }
       case actions.modify_interval: {
         this.puts(response_text.ask_interval)
-        this.next_ra = actions.modify_proceed;
-        this.next = actions.ask_param;
+        this.set_next_ra(actions.modify_proceed);
+        this.set_next(actions.ask_param);
         break;
       }
       case actions.modify_proceed: {
@@ -247,8 +256,8 @@ Member.prototype.run = function() {
       case actions.delete: {
         this.query();
         this.puts(response_text.ask_delete);
-        this.next_ra = actions.delete_proceed;
-        this.next = actions.ask_param;
+        this.set_next_ra(actions.delete_proceed);
+        this.set_next(actions.ask_param);
         break;
       }
       case actions.delete_proceed: {
@@ -258,7 +267,7 @@ Member.prototype.run = function() {
       }
       case actions.ask_param: {
         params.push(in_queue[this.mid].shift());
-        this.next = this.next_ra;
+        this.set_next(this.next_ra);
         this.run();
         break;
       }
@@ -267,7 +276,7 @@ Member.prototype.run = function() {
         break;
     }
   } catch(err) {
-    this.next = actions.welcome;
+    this.set_next(actions.welcome);
     this.run();
   }
 };

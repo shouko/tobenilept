@@ -183,6 +183,7 @@ Member.prototype.run = function() {
       case actions.welcome_navigate: {
         console.log("params are", this.params);
         this.set_next(this.params[0]);
+        this.run();
         break;
       }
       case actions.add_route: {

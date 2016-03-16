@@ -60,7 +60,9 @@ function fetch() {
         in_queue[element.mid].push(element.payload);
         members[element.mid].run();
       });
-      fetched = messages[messages.length - 1].id;
+      if(messages.length > 1) {
+        fetched = messages[messages.length - 1].id;
+      }
       resolve(messages.length);
     });
   });

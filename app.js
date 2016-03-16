@@ -17,20 +17,24 @@ var actions = {
   modify_station: 31,
   modify_time: 32,
   modify_interval: 33,
-  delete: 4
+  modify_proceed: 93,
+  delete: 4,
+  delete_proceed: 94
 };
 var modify_menu = {
   1: 31,
   2: 32,
   3: 33
 };
-var ask_text = {
-  route: "請輸入欲訂閱之公車路號（如：650）",
-  station: "請輸入目標公車站名：",
-  time: "請輸入通知時間區間：\n（如：0810-0840）",
-  interval: "請輸入通知時間間隔：\n（如：5）",
-  delete: "請輸入欲刪除之項目編號："
-}
+var response_text = {
+  ask_route: "請輸入欲訂閱之公車路號（如：650）",
+  ask_station: "請輸入目標公車站名：",
+  ask_time: "請輸入通知時間區間：\n（如：0810-0840）",
+  ask_interval: "請輸入通知時間間隔：\n（如：5）",
+  ask_delete: "請輸入欲刪除之項目編號：",
+  succeed_add: "您的訂閱已完成！",
+  succeed_modify: "您的訂閱已完成更新！"
+};
 
 var active_users = new Array();
 
@@ -145,25 +149,25 @@ Member.prototype.run = function() {
         break;
       }
       case actions.add_route: {
-        this.puts(ask_text.route);
+        this.puts(response_text.ask_route);
         this.next_ra = actions.add_station
         this.next = actions.ask_param;
         break;
       }
       case actions.add_station: {
-        this.puts(ask_text.station);
+        this.puts(response_text.ask_station);
         this.next_ra = actions.add_time
         this.next = actions.ask_param;
         break;
       }
       case actions.add_time: {
-        this.puts(ask_text.time);
+        this.puts(response_text.ask_time);
         this.next_ra = actions.add_interval
         this.next = actions.ask_param;
         break;
       }
       case actions.add_interval: {
-        this.puts(ask_text.interval);
+        this.puts(response_text.ask_interval);
         this.next_ra = actions.add_interval
         this.next = actions.ask_param;
         break;
@@ -188,25 +192,38 @@ Member.prototype.run = function() {
         break;
       }
       case actions.modify_station: {
-        this.puts(ask_text.station)
+        this.puts(response_text.ask_station)
         this.next_ra = actions.modify_proceed;
         this.next = actions.ask_param;
         break;
       }
       case actions.modify_time: {
+        this.puts(response_text.ask_time)
+        this.next_ra = actions.modify_proceed;
+        this.next = actions.ask_param;
         break;
       }
       case actions.modify_interval: {
+        this.puts(response_text.ask_interval)
+        this.next_ra = actions.modify_proceed;
+        this.next = actions.ask_param;
         break;
       }
       case actions.modify_proceed: {
+        // do dome modify job with params[2]
+        this.puts(response_text.succeed_modify);
         break;
       }
       case actions.delete: {
         this.query();
-        this.puts(ask_text.delete);
-        this.gets();
+        this.puts(response_text.ask_delete);
+        this.next_ra = actions.delete_proceed;
+        this.next = actions.ask_param;
         break;
+      }
+      case actions.delete_proceed: {
+        // do dome delete job with params[1]
+        this.puts(response_text.succeed_modify);
       }
       case actions.ask_param: {
         params.push(in_queue[this.mid].shift());

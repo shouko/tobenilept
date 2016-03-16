@@ -163,7 +163,7 @@ Member.prototype.add = function() {
 
 Member.prototype.run = function() {
   try {
-    console.log(Date(), this.mid, this.next, this.next_rs);
+    console.log(Date(), this.mid, this.next, this.next_ra);
     switch(this.next) {
       case actions.welcome: {
         in_queue[this.mid].shift();

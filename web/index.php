@@ -19,7 +19,7 @@ if(empty($body['result'])) {
 }
 try {
 	$db = new PDO('mysql:host='.DB_HOST.';dbname='.DB_NAME.';charset=UTF8', DB_USER, DB_PASS);
-	$stmt_text = $db->prepare('INSERT INTO `message` (`msg_id`, `mid`, `payload`, `done`, `stime`) VALUES(:msg_id, :mid, :payload, 0, FROM_UNIXTIME(:stime)');
+	$stmt_text = $db->prepare('INSERT INTO `message` (`msg_id`, `mid`, `payload`, `done`, `stime`) VALUES(:msg_id, :mid, :payload, 0, FROM_UNIXTIME(:stime))');
 	foreach($body['result'] as $row) {
 		if(
 			$row['eventType'] == $line_const['eventType']['Message'] &&

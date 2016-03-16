@@ -127,7 +127,7 @@ Member.prototype.puts = function(msg) {
 
 Member.prototype.query = function() {
   // fetch subscription record
-  this.puts();
+  this.puts("以下是你的訂閱紀錄");
 }
 
 Member.prototype.add = function() {
@@ -174,6 +174,7 @@ Member.prototype.run = function() {
       }
       case actions.add_proceed: {
         // proceed add action with params
+        this.puts(response_text.succeed_add);
       }
       case actions.query: {
         this.query();

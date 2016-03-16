@@ -117,7 +117,7 @@ msg.main_menu += ["訂閱公車資訊", "查詢訂閱紀錄", "更改訂閱紀�
 function Member(mid) {
   this.mid = mid;
   this.params = [];
-  this.set_next(actions.welcome;
+  this.next = actions.welcome;
   console.log(Date(), "create", mid);
 }
 

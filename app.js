@@ -45,13 +45,24 @@ var empty_rounds = 0;
 function fetch() {
   return new Promise(function(resolve, reject) {
     sequelize.query(
-      'SELECT * FROM `message` WHERE `id` > :id', {
+      'SELECT `id`, `mid`, `payload` FROM `message` WHERE `id` > :id AND `done` = 0', {
         replacements: {
           id: fetched
         },
         type: sequelize.QueryTypes.SELECT
       }
     ).then(function(messages) {
+      if(messages.length > 1) {
+        fetched = messages[messages.length - 1].id;
+        sequelize.query(
+          'UPDATE `message` SET `done` = 1 WHERE `id` <= :id', {
+            replacements: {
+              id: fetched
+            },
+            type: sequelize.QueryTypes.UPDATE
+          }
+        );
+      }
       messages.forEach(function(element, index, array) {
         if(typeof(in_queue[element.mid]) == "undefined" || typeof(members[element.mid]) == "undefined") {
           in_queue[element.mid] = new Array();
@@ -60,9 +71,6 @@ function fetch() {
         in_queue[element.mid].push(element.payload);
         members[element.mid].run();
       });
-      if(messages.length > 1) {
-        fetched = messages[messages.length - 1].id;
-      }
       resolve(messages.length);
     });
   });

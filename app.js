@@ -126,6 +126,7 @@ Member.prototype.gets = function() {
 };
 
 Member.prototype.puts = function(msg) {
+  console.log(Date(), 'puts', msg);
   var data = {
     to: [ this.mid ],
     toChannel: 1383378250,

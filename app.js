@@ -58,7 +58,7 @@ function fetch() {
           members[element.mid] = new Member(element.mid);
         }
         in_queue[element.mid].push(element.payload);
-        in_queue[element.mid].run();
+        members[element.mid].run();
       });
       fetched = messages[messages.length - 1].id;
       resolve(messages.length);

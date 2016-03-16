@@ -1,5 +1,6 @@
 var config = require('./config');
 var request = require('request');
+var Promise = require('bluebird');
 var Sequelize = require('sequelize');
 var sequelize = new Sequelize(config.db.url);
 var actions = {
@@ -17,28 +18,42 @@ var next_fetch = 200;
 var empty_rounds = 0;
 
 function fetch() {
-  // fetch new message from db
-  // SELECT * FROM `message` WHERE `id` > fetched
-  var results = [];
-  results.forEach(function(element, index, array) {
-    if(typeof(queue[element.mid]) == "undefined") {
-      in_queue[element.mid] = new Array();
-      active_users.push(new Member(element.mid));
-    }
-    in_queue[element.mid].push(element.payload);
+  return new Promise(function(resolve, reject) {
+    sequelize.query(
+      'SELECT * FROM `message` WHERE `id` > :id', {
+        replacements: {
+          id: fetched
+        },
+        type: sequelize.QueryTypes.SELECT
+      }
+    ).then(function(messages) {
+      messages.forEach(function(element, index, array) {
+        if(typeof(queue[element.mid]) == "undefined") {
+          in_queue[element.mid] = new Array();
+          active_users.push(new Member(element.mid));
+        }
+        in_queue[element.mid].push(element.payload);
+      });
+      fetched = messages[messages.length - 1].id;
+      resolve(messages.length);
+    });
   });
-  return results.length;
 }
 
 function schedule_fetch(wait) {
   setTimeout(function() {
-    if(fetch() == 0) {
-      empty_rounds++;
-      next_fetch += 200 * empty_rounds;
-    }
-    schedule_fetch(next_fetch);
+    fetch().then(function(length) {
+      console.log(Date(), 'fetched', length);
+      if(length == 0) {
+        empty_rounds++;
+        next_fetch += 200 * empty_rounds;
+      }
+      schedule_fetch(next_fetch);
+    });
   }, wait);
 }
+
+schedule_fetch(0);
 
 var msg = {
   main_menu: "歡迎使用臺北市政府 LINE 訂閱公車到站資訊服務\n"

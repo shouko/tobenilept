@@ -36,9 +36,8 @@ var response_text = {
   succeed_modify: "您的訂閱已完成更新！"
 };
 
-var active_users = new Array();
-
 var in_queue = new Array();
+var members = new Array();
 var fetched = 0;
 var next_fetch = 200;
 var empty_rounds = 0;
@@ -54,11 +53,12 @@ function fetch() {
       }
     ).then(function(messages) {
       messages.forEach(function(element, index, array) {
-        if(typeof(queue[element.mid]) == "undefined") {
+        if(typeof(in_queue[element.mid]) == "undefined" || typeof(members[element.mid]) == "undefined") {
           in_queue[element.mid] = new Array();
-          active_users.push(new Member(element.mid));
+          members[element.mid] = new Member(element.mid);
         }
         in_queue[element.mid].push(element.payload);
+        in_queue[element.mid].run();
       });
       fetched = messages[messages.length - 1].id;
       resolve(messages.length);
@@ -139,6 +139,7 @@ Member.prototype.run = function() {
   try {
     switch(this.next) {
       case actions.welcome: {
+        in_queue[this.mid].shift();
         this.puts(msg.main_menu);
         this.next_ra = actions.welcome_navigate;
         this.next = actions.ask_param;
@@ -175,6 +176,7 @@ Member.prototype.run = function() {
       case actions.add_proceed: {
         // proceed add action with params
         this.puts(response_text.succeed_add);
+        break;
       }
       case actions.query: {
         this.query();
@@ -225,6 +227,7 @@ Member.prototype.run = function() {
       case actions.delete_proceed: {
         // do dome delete job with params[1]
         this.puts(response_text.succeed_modify);
+        break;
       }
       case actions.ask_param: {
         params.push(in_queue[this.mid].shift());
@@ -232,8 +235,12 @@ Member.prototype.run = function() {
         this.run();
         break;
       }
+      default:
+        throw 1;
+        break;
     }
-  } catch(Exception) {
+  } catch(err) {
     this.next = actions.welcome;
+    this.run();
   }
 };

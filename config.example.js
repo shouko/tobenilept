@@ -3,9 +3,6 @@ module.exports = {
     ChannelToken: ''
   },
   db: {
-    host: '',
-    name: '',
-    user: '',
-    pass: ''
+    url: 'mysql://user:pass@example.com:5432/dbname'
   }
 };

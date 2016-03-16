@@ -1,6 +1,7 @@
-var request = require('request');
 var config = require('./config');
-
+var request = require('request');
+var Sequelize = require('sequelize');
+var sequelize = new Sequelize(config.db.url);
 var actions = {
   add: 1,
   query: 2,

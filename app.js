@@ -163,11 +163,11 @@ Member.prototype.add = function() {
 };
 
 Member.prototype.set_next = function(action) {
-  this.next = action;
+  this.next = parseInt(action);
 };
 
 Member.prototype.set_next_ra = function(action) {
-  this.next_ra = action;
+  this.next_ra = parseInt(action);
 };
 
 Member.prototype.run = function() {

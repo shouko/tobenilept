@@ -54,8 +54,9 @@ function fetch() {
     ).then(function(messages) {
       Promise.all([
         new Promise(function(resolve, reject) {
-          if(messages.length > 1) {
+          if(messages.length > 0) {
             fetched = messages[messages.length - 1].id;
+            console.log("max fetched id", fetched);
             sequelize.query(
               'UPDATE `message` SET `done` = 1 WHERE `id` <= :id', {
                 replacements: {

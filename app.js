@@ -181,8 +181,8 @@ Member.prototype.run = function() {
         break;
       }
       case actions.welcome_navigate: {
-        console.log("params are", params);
-        this.set_next(params[0]);
+        console.log("params are", this.params);
+        this.set_next(this.params[0]);
         break;
       }
       case actions.add_route: {
@@ -226,7 +226,7 @@ Member.prototype.run = function() {
         break;
       }
       case actions.modify_navigate: {
-        this.next = modify_menu[params[1]];
+        this.next = modify_menu[this.params[1]];
         this.run();
         break;
       }
@@ -266,7 +266,7 @@ Member.prototype.run = function() {
         break;
       }
       case actions.ask_param: {
-        params.push(in_queue[this.mid].shift());
+        this.params.push(in_queue[this.mid].shift());
         this.set_next(this.next_ra);
         this.run();
         break;
@@ -276,6 +276,7 @@ Member.prototype.run = function() {
         break;
     }
   } catch(err) {
+    console.log(err)
     this.set_next(actions.welcome);
     this.run();
   }

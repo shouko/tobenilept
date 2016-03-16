@@ -40,7 +40,6 @@ try {
 			// add as friend
 		}
 	}
-	file_put_contents("./log/".time().".txt", implode("\n\n", array(print_r($_SERVER, true), $body, $mac)));
 	echo "ok";
 } catch(PDOException $e) {
 	http_response_code(500);

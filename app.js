@@ -52,26 +52,38 @@ function fetch() {
         type: sequelize.QueryTypes.SELECT
       }
     ).then(function(messages) {
-      if(messages.length > 1) {
-        fetched = messages[messages.length - 1].id;
-        sequelize.query(
-          'UPDATE `message` SET `done` = 1 WHERE `id` <= :id', {
-            replacements: {
-              id: fetched
-            },
-            type: sequelize.QueryTypes.UPDATE
+      Promise.all([
+        new Promise(function(resolve, reject) {
+          if(messages.length > 1) {
+            fetched = messages[messages.length - 1].id;
+            sequelize.query(
+              'UPDATE `message` SET `done` = 1 WHERE `id` <= :id', {
+                replacements: {
+                  id: fetched
+                },
+                type: sequelize.QueryTypes.UPDATE
+              }
+            ).then(function(results) {
+              resolve();
+            });
+          } else {
+            resolve();
           }
-        );
-      }
-      messages.forEach(function(element, index, array) {
-        if(typeof(in_queue[element.mid]) == "undefined" || typeof(members[element.mid]) == "undefined") {
-          in_queue[element.mid] = new Array();
-          members[element.mid] = new Member(element.mid);
-        }
-        in_queue[element.mid].push(element.payload);
-        members[element.mid].run();
+        }),
+        new Promise(function(resolve, reject) {
+          messages.forEach(function(element, index, array) {
+            if(typeof(in_queue[element.mid]) == "undefined" || typeof(members[element.mid]) == "undefined") {
+              in_queue[element.mid] = new Array();
+              members[element.mid] = new Member(element.mid);
+            }
+            in_queue[element.mid].push(element.payload);
+            members[element.mid].run();
+          });
+          resolve();
+        })
+      ]).then(function() {
+        resolve(messages.length);
       });
-      resolve(messages.length);
     });
   });
 }

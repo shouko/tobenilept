@@ -31,7 +31,7 @@ try {
 				':msg_id' => $row['content']['id'],
 				':mid' => $row['content']['from'],
 				':payload' => $row['content']['text'],
-				':stime' => $row['content']['createdTime']
+				':stime' => $row['content']['createdTime'] / 1000
 			));
 		} else if(
 			$row['eventType'] == $line_const['eventType']['Operation'] &&

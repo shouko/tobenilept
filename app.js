@@ -1,4 +1,5 @@
 var request = require('request');
+var config = require('./config');
 
 var actions = {
   add: 1,
@@ -56,7 +57,28 @@ Member.prototype.gets = function() {
 };
 
 Member.prototype.puts = function(msg) {
-
+  var data = {
+    to: [ this.mid ],
+    toChannel: 1383378250,
+    eventType: 138311608800106203,
+    content: {
+      contentType: 1,
+      toType: 1,
+      text: msg
+    }
+  };
+  request({
+    method: 'POST',
+    url: 'https://api.line.me/',
+    headers: {
+      'X-LINE-ChannelToken': config.line.ChannelToken
+    },
+    json: data
+  }, function(err, response, body) {
+    if(err) {
+      console.log(Date(), err, data);
+    }
+  });
 };
 
 Member.prototype.run = function() {

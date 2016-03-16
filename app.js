@@ -274,7 +274,7 @@ Member.prototype.run = function() {
         break;
       }
       default:
-        throw 1;
+        throw "UNKNOWN_ENTRY";
         break;
     }
   } catch(err) {

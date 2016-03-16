@@ -89,7 +89,7 @@ var msg = {
 
 msg.main_menu += ["訂閱公車資訊", "查詢訂閱紀錄", "更改訂閱紀錄", "刪除訂閱紀錄"].map(function(element, index, array) {
   var option_num = index + 1;
-  return option_num + ". " + element + ":請輸入 " + option_num;
+  return element + ":請輸入 " + option_num;
 }).join("\n");
 
 function Member(mid) {

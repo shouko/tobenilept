@@ -10,7 +10,7 @@ var actions = {
   add_station: 11,
   add_time: 12,
   add_interval: 13,
-  add_proceed: 91
+  add_proceed: 91,
   query: 2,
   modify: 3,
   modify_navigate: 30,

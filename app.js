@@ -214,10 +214,12 @@ Member.prototype.run = function() {
       case actions.add_proceed: {
         // proceed add action with params
         this.puts(response_text.succeed_add);
+        this.params = [];
         break;
       }
       case actions.query: {
         this.query();
+        this.params = [];
         break;
       }
       case actions.modify: {
@@ -253,6 +255,7 @@ Member.prototype.run = function() {
       case actions.modify_proceed: {
         // do dome modify job with params[2]
         this.puts(response_text.succeed_modify);
+        this.params = [];
         break;
       }
       case actions.delete: {
@@ -265,6 +268,7 @@ Member.prototype.run = function() {
       case actions.delete_proceed: {
         // do dome delete job with params[1]
         this.puts(response_text.succeed_modify);
+        this.params = [];
         break;
       }
       case actions.ask_param: {

@@ -1,21 +1,21 @@
 <?php
 require 'config.php';
 include 'constants.php';
-function fail() {
+function fail($text) {
 	http_response_code(400);
-	die();
+	die($text);
 }
 if($_SERVER['REQUEST_METHOD'] !== "POST") {
-	fail();
+	fail('invalid_method');
 }
 $body = file_get_contents('php://input');
 $mac = base64_encode(hash_hmac("sha256", utf8_encode($body), utf8_encode(LINE_SECRET), true));
 if($mac !== $_SERVER['HTTP_X_LINE_CHANNELSIGNATURE']) {
-	fail();
+	fail('invalid_request');
 }
 $body = json_decode($body, 1);
 if(empty($body['result'])) {
-	fail();
+	fail('empty_body');
 }
 try {
 	$db = new PDO('mysql:host='.DB_HOST.';dbname='.DB_NAME.';charset=UTF8', DB_USER, DB_PASS);

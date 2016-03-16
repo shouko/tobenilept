@@ -17,16 +17,32 @@ $body = json_decode($body, 1);
 if(empty($body['result'])) {
 	fail();
 }
-foreach($body['result'] as $row) {
-	if(
-		$row['eventType'] == $line_const['eventType']['Message'] &&
-		$row['content']['toType'] == $line_const['toType']['User'] &&
-		$row['content']['contentType'] == $line_const['contentType']['Text']
-	) {
-		$row['content']['from'];
-		$row['content']['createdTime'];
-		$row['content']['text']
+try {
+	$db = new PDO('mysql:host='.DB_HOST.';dbname='.DB_NAME.';charset=UTF8', DB_USER, DB_PASS);
+	$stmt_text = $db->prepare('INSERT INTO `message` (`msg_id`, `mid`, `payload`, `done`, `stime`) VALUES(:msg_id, :mid, :payload, 0, FROM_UNIXTIME(:stime)');
+	foreach($body['result'] as $row) {
+		if(
+			$row['eventType'] == $line_const['eventType']['Message'] &&
+			$row['content']['toType'] == $line_const['toType']['User'] &&
+			$row['content']['contentType'] == $line_const['contentType']['Text']
+		) {
+			// receive text message
+			$stmt_text->execute(array(
+				':msg_id' => $row['content']['id'],
+				':mid' => $row['content']['from'],
+				':payload' => $row['content']['text'],
+				':stime' => $row['content']['createdTime']
+			));
+		} else if(
+			$row['eventType'] == $line_const['eventType']['Operation'] &&
+			$row['content']['opType'] == $line_const['operationType']['Friend']
+		) {
+			// add as friend
+		}
 	}
+	file_put_contents("./log/".time().".txt", implode("\n\n", array(print_r($_SERVER, true), $body, $mac)));
+	echo "ok";
+} catch(PDOException $e) {
+	http_response_code(500);
+	die();
 }
-file_put_contents("./log/".time().".txt", implode("\n\n", array(print_r($_SERVER, true), $body, $mac)));
-echo "ok";

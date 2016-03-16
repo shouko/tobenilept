@@ -19,7 +19,8 @@ var actions = {
   modify_interval: 33,
   modify_proceed: 93,
   delete: 4,
-  delete_proceed: 94
+  delete_proceed: 94,
+  ask_param: 100
 };
 var modify_menu = {
   1: 31,

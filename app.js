@@ -207,7 +207,7 @@ Member.prototype.run = function() {
       }
       case actions.add_interval: {
         this.puts(response_text.ask_interval);
-        this.set_next_ra(actions.add_interval);
+        this.set_next_ra(actions.add_proceed);
         this.set_next(actions.ask_param);
         break;
       }

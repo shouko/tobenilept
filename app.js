@@ -155,20 +155,20 @@ Member.prototype.puts = function(msg) {
 Member.prototype.query = function() {
   // fetch subscription record
   this.puts("以下是你的訂閱紀錄");
-}
+};
 
 Member.prototype.add = function() {
   // add subscription to db
   this.puts('您的訂閱已完成');
-}
+};
 
 Member.prototype.set_next = function(action) {
   this.next = action;
-}
+};
 
 Member.prototype.set_next_ra = function(action) {
   this.next_ra = action;
-}
+};
 
 Member.prototype.run = function() {
   try {

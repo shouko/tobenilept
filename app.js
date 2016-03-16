@@ -96,6 +96,7 @@ function Member(mid) {
   this.mid = mid;
   this.params = [];
   this.next = actions.welcome;
+  console.log(Date(), "create", mid);
 }
 
 Member.prototype.gets = function() {
@@ -115,7 +116,7 @@ Member.prototype.puts = function(msg) {
   };
   request({
     method: 'POST',
-    url: 'https://api.line.me/',
+    url: 'https://api.line.me/v1/events',
     headers: {
       'X-LINE-ChannelToken': config.line.ChannelToken
     },
@@ -124,6 +125,7 @@ Member.prototype.puts = function(msg) {
     if(err) {
       console.log(Date(), err, data);
     }
+    console.log(Date(), response);
   });
 };
 

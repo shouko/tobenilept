@@ -9,7 +9,7 @@ if($_SERVER['REQUEST_METHOD'] !== "POST") {
 	fail('invalid_method');
 }
 $body = file_get_contents('php://input');
-$mac = base64_encode(hash_hmac("sha256", utf8_encode($body), utf8_encode(LINE_SECRET), true));
+$mac = base64_encode(hash_hmac("sha256", $body, utf8_encode(LINE_SECRET), true));
 if($mac !== $_SERVER['HTTP_X_LINE_CHANNELSIGNATURE']) {
 	fail('invalid_request');
 }

@@ -19,7 +19,8 @@ function fetch_json_gz(url) {
 
 var data_sets = {
 	stop: 'http://data.taipei/bus/Stop',
-	route: 'http://data.taipei/bus/ROUTE'
+	route: 'http://data.taipei/bus/ROUTE',
+	estimate: 'http://data.taipei/bus/EstimateTime'
 };
 
 var Bus = function(sequelize) {
@@ -59,6 +60,23 @@ Bus.prototype.fetch = {
 								back: row.goBack
 							},
 							type: sequelize.QueryTypes.INSERT
+						}
+					);
+				})).then(resolve);
+			});
+		});
+	},
+	estimate: function() {
+		return new Promise(function(resolve, reject) {
+			fetch_json_gz(data_sets.estimate).then(function(data) {
+				new Promise.all(data.BusInfo.map(function(row) {
+					return this.sequelize.query(
+						'UPDATE `stop` SET `estimate` = :estimate WHERE id = :id', {
+							replacements: {
+								id: row.StopID,
+								estimate: row.EstimateTime
+							},
+							type: sequelize.QueryTypes.UPDATE
 						}
 					);
 				})).then(resolve);

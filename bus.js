@@ -23,8 +23,10 @@ var data_sets = {
   estimate: 'http://data.taipei/bus/EstimateTime'
 };
 
-var Bus = function(sequelize) {
-  this.sequelize = sequelize;
+var sequelize;
+
+var Bus = function(sequelize_instance) {
+  sequelize = sequelize_instance;
 }
 
 Bus.prototype.fetch = {
@@ -32,7 +34,7 @@ Bus.prototype.fetch = {
     return new Promise(function(resolve, reject) {
       fetch_json_gz(data_sets.route).then(function(data) {
         new Promise.all(data.BusInfo.map(function(row) {
-          return this.sequelize.query(
+          return sequelize.query(
             'INSERT INTO `route` (`id`, `name`, `departure`, `destination`) VALUES(:id, :name, :departure, :destination) ON DUPLICATE KEY UPDATE `name` = :name, `departure` = :departure, `destination` = :destination', {
               replacements: {
                 id: row.Id,
@@ -51,7 +53,7 @@ Bus.prototype.fetch = {
     return new Promise(function(resolve, reject) {
       fetch_json_gz(data_sets.stop).then(function(data) {
         new Promise.all(data.BusInfo.map(function(row) {
-          return this.sequelize.query(
+          return sequelize.query(
             'INSERT INTO `stop` (`id`, `name`, `route_id`, `back`) VALUES(:id, :name, :route_id, :back) ON DUPLICATE KEY UPDATE `name` = :name, `route_id` = :route_id, `back` = :back', {
               replacements: {
                 id: row.Id,
@@ -70,7 +72,7 @@ Bus.prototype.fetch = {
     return new Promise(function(resolve, reject) {
       fetch_json_gz(data_sets.estimate).then(function(data) {
         new Promise.all(data.BusInfo.map(function(row) {
-          return this.sequelize.query(
+          return sequelize.query(
             'UPDATE `stop` SET `estimate` = :estimate WHERE `id` = :id', {
               replacements: {
                 id: row.StopID,

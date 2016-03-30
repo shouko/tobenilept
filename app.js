@@ -14,8 +14,6 @@ var modify_menu = {
 var in_queue = new Array();
 var members = new Array();
 var fetched = 0;
-var next_fetch = 200;
-var empty_rounds = 0;
 
 function fetch() {
   return new Promise(function(resolve, reject) {
@@ -68,9 +66,9 @@ function schedule_fetch(wait) {
   setTimeout(function() {
     fetch().then(function(length) {
       console.log(Date(), 'fetched', length);
+			var next_fetch = 100;
       if(length == 0) {
-        empty_rounds++;
-        next_fetch += 200 * empty_rounds;
+        next_fetch = 500;
       }
       schedule_fetch(next_fetch);
     });

@@ -80,7 +80,8 @@ schedule_fetch(0);
 function Member(mid) {
   this.mid = mid;
   this.params = [];
-  this.next = actions.welcome;
+  this.jas = new Array();
+  this.jas_push(actions.welcome);
   console.log(Date(), "create", mid);
 }
 
@@ -125,53 +126,49 @@ Member.prototype.add = function() {
   this.puts('您的訂閱已完成');
 };
 
-Member.prototype.set_next = function(action) {
-  this.next = parseInt(action);
-};
-
-Member.prototype.set_next_ra = function(action) {
-  this.next_ra = parseInt(action);
+Member.prototype.jas_push = function(action) {
+  this.jas.push(parseInt(action));
 };
 
 Member.prototype.run = function() {
   try {
-    console.log(Date(), this.mid, this.next, this.next_ra);
-    switch(this.next) {
+    console.log(Date(), this.mid, this.jas[this.jas.length - 1], this.jas[this.jas.length - 2]);
+    switch(this.jas.pop()) {
       case actions.welcome: {
         in_queue[this.mid].shift();
         this.puts(responses.main_menu);
-        this.set_next_ra(actions.welcome_navigate);
-        this.set_next(actions.ask_param);
+        this.jas_push(actions.welcome_navigate);
+        this.jas_push(actions.ask_param);
         break;
       }
       case actions.welcome_navigate: {
         console.log("params are", this.params);
-        this.set_next(this.params[0]);
+        this.jas_push(this.params[0]);
         this.run();
         break;
       }
       case actions.add_route: {
         this.puts(responses.ask_route);
-        this.set_next_ra(actions.add_station);
-        this.set_next(actions.ask_param);
+        this.jas_push(actions.add_station);
+        this.jas_push(actions.ask_param);
         break;
       }
       case actions.add_station: {
         this.puts(responses.ask_station);
-        this.set_next_ra(actions.add_time);
-        this.set_next(actions.ask_param);
+        this.jas_push(actions.add_time);
+        this.jas_push(actions.ask_param);
         break;
       }
       case actions.add_time: {
         this.puts(responses.ask_time);
-        this.set_next_ra(actions.add_interval);
-        this.set_next(actions.ask_param);
+        this.jas_push(actions.add_interval);
+        this.jas_push(actions.ask_param);
         break;
       }
       case actions.add_interval: {
         this.puts(responses.ask_interval);
-        this.set_next_ra(actions.add_proceed);
-        this.set_next(actions.ask_param);
+        this.jas_push(actions.add_proceed);
+        this.jas_push(actions.ask_param);
         break;
       }
       case actions.add_proceed: {
@@ -188,31 +185,31 @@ Member.prototype.run = function() {
       case actions.modify: {
         this.query();
         this.puts(responses.ask_modify);
-        this.set_next_ra(actions.modify_navigate);
-        this.set_next(actions.ask_param);
+        this.jas_push(actions.modify_navigate);
+        this.jas_push(actions.ask_param);
         break;
       }
       case actions.modify_navigate: {
-        this.next = modify_menu[this.params[1]];
+        this.jas_push(modify_menu[this.params[1]]);
         this.run();
         break;
       }
       case actions.modify_station: {
         this.puts(responses.ask_station)
-        this.set_next_ra(actions.modify_proceed);
-        this.set_next(actions.ask_param);
+        this.jas_push(actions.modify_proceed);
+        this.jas_push(actions.ask_param);
         break;
       }
       case actions.modify_time: {
         this.puts(responses.ask_time)
-        this.set_next_ra(actions.modify_proceed);
-        this.set_next(actions.ask_param);
+        this.jas_push(actions.modify_proceed);
+        this.jas_push(actions.ask_param);
         break;
       }
       case actions.modify_interval: {
         this.puts(responses.ask_interval)
-        this.set_next_ra(actions.modify_proceed);
-        this.set_next(actions.ask_param);
+        this.jas_push(actions.modify_proceed);
+        this.jas_push(actions.ask_param);
         break;
       }
       case actions.modify_proceed: {
@@ -224,8 +221,8 @@ Member.prototype.run = function() {
       case actions.delete: {
         this.query();
         this.puts(responses.ask_delete);
-        this.set_next_ra(actions.delete_proceed);
-        this.set_next(actions.ask_param);
+        this.jas_push(actions.delete_proceed);
+        this.jas_push(actions.ask_param);
         break;
       }
       case actions.delete_proceed: {
@@ -236,7 +233,6 @@ Member.prototype.run = function() {
       }
       case actions.ask_param: {
         this.params.push(in_queue[this.mid].shift());
-        this.set_next(this.next_ra);
         this.run();
         break;
       }
@@ -246,7 +242,7 @@ Member.prototype.run = function() {
     }
   } catch(err) {
     console.log(err)
-    this.set_next(actions.welcome);
+    this.jas_push(actions.welcome);
     this.run();
   }
 };

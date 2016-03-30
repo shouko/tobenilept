@@ -15,5 +15,9 @@ module.exports = {
   modify_proceed: 93,
   delete: 4,
   delete_proceed: 94,
-  ask_param: 100
+  ask_param: 100,
+  verify_route: 201,
+  verify_station: 202,
+  verify_time: 203,
+  verify_interval: 204
 };

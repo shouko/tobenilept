@@ -136,14 +136,17 @@ Member.prototype.query = function() {
 
 Member.prototype.add = function() {
   // add subscription to db
-  this.puts('您的訂閱已完成');
+  console.log("params", this.params);
+  this.params = [];
 };
 
 Member.prototype.edit = function() {
+  console.log("params", this.params);
   this.params = [];
 };
 
 Member.prototype.delete = function() {
+  console.log("params", this.params);
   this.params = [];
 };
 
@@ -156,8 +159,8 @@ Member.prototype.jas_clear = function() {
 }
 
 Member.prototype.jas_set = function(action) {
-	this.jas_clear();
-	this.jas_push(action);
+  this.jas_clear();
+  this.jas_push(action);
 }
 
 Member.prototype.ra_set = function(action) {
@@ -191,13 +194,13 @@ Member.prototype.run = function() {
       }
       case actions.add_route: {
         self.puts(responses.ask_route);
-				self.beq(actions.verify_route, actions.add_back, actions.add_route);
+        self.beq(actions.verify_route, actions.add_back, actions.add_route);
         break;
       }
       case actions.add_back: {
         self.puts(responses.ask_back);
         self.beq(actions.verify_back, actions.add_stop, actions.add_back);
-				break;
+        break;
       }
       case actions.add_stop: {
         self.puts(responses.ask_stop);
@@ -216,8 +219,8 @@ Member.prototype.run = function() {
       }
       case actions.add_proceed: {
         // proceed add action with params
-        self.puts(responses.succeed_add);
-        self.params = [];
+        self.add();
+        self.puts(responses.suceed_add);
         break;
       }
       case actions.query: {
@@ -256,6 +259,7 @@ Member.prototype.run = function() {
       }
       case actions.modify_proceed: {
         // do dome modify job with params[2]
+        self.modify();
         self.puts(responses.succeed_modify);
         break;
       }
@@ -267,6 +271,7 @@ Member.prototype.run = function() {
       }
       case actions.delete_proceed: {
         // do dome delete job with params[1]
+        self.delete();
         self.puts(responses.succeed_modify);
         break;
       }
@@ -350,7 +355,8 @@ Member.prototype.run = function() {
     }
   } catch(err) {
     console.log(err)
-    self.jas_push(actions.welcome);
+    self.params = [];
+    self.jas_set(actions.welcome);
     self.run();
   }
 };

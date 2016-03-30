@@ -192,6 +192,7 @@ Member.prototype.run = function() {
       case actions.add_back: {
         self.puts(responses.ask_back);
         self.beq(actions.verify_back, actions.add_stop, actions.add_back);
+				break;
       }
       case actions.add_stop: {
         self.puts(responses.ask_stop);

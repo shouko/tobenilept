@@ -96,11 +96,12 @@ Bus.prototype.search = {
       }
     );
   },
-  stop: function(name, route_id) {
+  stop: function(name, back, route_id) {
     return sequelize.query(
-      'SELECT * FROM `stop` WHERE `name` = :name AND `route_id` = :route_id', {
+      'SELECT * FROM `stop` WHERE `name` = :name AND `route_id` = :route_id AND `back` = :back', {
         replacements: {
           name: name,
+          back: back,
           route_id: route_id
         },
         type: sequelize.QueryTypes.SELECT

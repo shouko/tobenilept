@@ -4,7 +4,9 @@ var responses = require('./responses');
 var request = require('request');
 var Promise = require('bluebird');
 var Sequelize = require('sequelize');
+var Bus = require('./bus');
 var sequelize = new Sequelize(config.db.url);
+var bus = new Bus(sequelize);
 var modify_menu = {
   1: 31,
   2: 32,
@@ -80,6 +82,7 @@ schedule_fetch(0);
 function Member(mid) {
   this.mid = mid;
   this.params = [];
+  this.ra = 0;
   this.jas = new Array();
   this.jas_push(actions.welcome);
   console.log(Date(), "create", mid);
@@ -148,107 +151,198 @@ Member.prototype.jas_push = function(action) {
   this.jas.push(parseInt(action));
 };
 
+Member.prototype.jas_clear = function() {
+  this.jas = [];
+}
+
+Member.prototype.ra_set = function(action) {
+  this.ra = parseInt(action);
+}
+
+Member.prototype.beq = function(verify, success, fail) {
+  self.jas_push(success);
+  self.jas_push(verify);
+  self.jas_push(actions.ask_param);
+  self.ra_set(fail);
+}
+
 Member.prototype.run = function() {
+  var self = this;
   try {
-    console.log(Date(), this.mid, this.jas[this.jas.length - 1], this.jas[this.jas.length - 2]);
-    switch(this.jas.pop()) {
+    console.log(Date(), self.mid, self.jas[self.jas.length - 1], self.jas[self.jas.length - 2]);
+    switch(self.jas.pop()) {
       case actions.welcome: {
-        in_queue[this.mid].shift();
-        this.puts(responses.main_menu);
-        this.jas_push(actions.welcome_navigate);
-        this.jas_push(actions.ask_param);
+        in_queue[self.mid].shift();
+        self.puts(responses.main_menu);
+        self.jas_push(actions.welcome_navigate);
+        self.jas_push(actions.ask_param);
         break;
       }
       case actions.welcome_navigate: {
-        console.log("params are", this.params);
-        this.jas_push(this.params[0]);
-        this.run();
+        console.log("params are", self.params);
+        self.jas_push(self.params[0]);
+        self.run();
         break;
       }
       case actions.add_route: {
-        this.puts(responses.ask_route);
-        this.jas_push(actions.add_station);
-        this.jas_push(actions.ask_param);
+        self.puts(responses.ask_route);
+        self.jas_push(actions.add_back);
+        self.jas_push(actions.verify_route);
+        self.jas_push(actions.ask_param);
+        self.ra_set(actions.add_route);
         break;
       }
-      case actions.add_station: {
-        this.puts(responses.ask_station);
-        this.jas_push(actions.add_time);
-        this.jas_push(actions.ask_param);
+      case actions.add_back: {
+        self.puts(responses.ask_back);
+        self.beq(actions.verify_back, actions.add_stop, actions.add_back);
+      }
+      case actions.add_stop: {
+        self.puts(responses.ask_stop);
+        self.beq(actions.verify_stop, actions.add_time, actions.add_stop);
         break;
       }
       case actions.add_time: {
-        this.puts(responses.ask_time);
-        this.jas_push(actions.add_interval);
-        this.jas_push(actions.ask_param);
+        self.puts(responses.ask_time);
+        self.beq(actions.verify_time, actions.add_interval, actions.add_time);
         break;
       }
       case actions.add_interval: {
-        this.puts(responses.ask_interval);
-        this.jas_push(actions.add_proceed);
-        this.jas_push(actions.ask_param);
+        self.puts(responses.ask_interval);
+        self.beq(actions.verify_interval, actions.add_proceed, actions.add_interval);
         break;
       }
       case actions.add_proceed: {
         // proceed add action with params
-        this.puts(responses.succeed_add);
-        this.params = [];
+        self.puts(responses.succeed_add);
+        self.params = [];
         break;
       }
       case actions.query: {
-        this.query();
+        self.query();
         break;
       }
       case actions.modify: {
-        this.query();
-        this.puts(responses.ask_modify);
-        this.jas_push(actions.modify_navigate);
-        this.jas_push(actions.ask_param);
+        self.query();
+        self.jas_push(actions.modify_item);
+        self.run();
         break;
+      }
+      case actions.modify_item: {
+        self.puts(responses.ask_modify);
+        self.beq(actions.verify_item, actions.modify_navigate, actions.modify_item);
       }
       case actions.modify_navigate: {
-        this.jas_push(modify_menu[this.params[1]]);
-        this.run();
+        self.jas_push(modify_menu[self.params[1]]);
+        self.run();
         break;
       }
-      case actions.modify_station: {
-        this.puts(responses.ask_station)
-        this.jas_push(actions.modify_proceed);
-        this.jas_push(actions.ask_param);
+      case actions.modify_stop: {
+        self.puts(responses.ask_stop)
+        self.beq(actions.verify_stop, actions.modify_proceed, actions.modify_stop);
         break;
       }
       case actions.modify_time: {
-        this.puts(responses.ask_time)
-        this.jas_push(actions.modify_proceed);
-        this.jas_push(actions.ask_param);
+        self.puts(responses.ask_time)
+        self.beq(actions.verify_time, actions.modify_proceed, actions.modify_time);
         break;
       }
       case actions.modify_interval: {
-        this.puts(responses.ask_interval)
-        this.jas_push(actions.modify_proceed);
-        this.jas_push(actions.ask_param);
+        self.puts(responses.ask_interval)
+        self.beq(actions.verify_interval, actions.modify_proceed, actions.modify_interval);
         break;
       }
       case actions.modify_proceed: {
         // do dome modify job with params[2]
-        this.puts(responses.succeed_modify);
+        self.puts(responses.succeed_modify);
         break;
       }
       case actions.delete: {
-        this.query();
-        this.puts(responses.ask_delete);
-        this.jas_push(actions.delete_proceed);
-        this.jas_push(actions.ask_param);
+        self.query();
+        self.puts(responses.ask_delete);
+        self.beq(actions.verify_item, actions.delete_proceed, actions.delete);
         break;
       }
       case actions.delete_proceed: {
         // do dome delete job with params[1]
-        this.puts(responses.succeed_modify);
+        self.puts(responses.succeed_modify);
+        break;
+      }
+      case actions.verify_route: {
+        bus.search.route(self.params.pop()).then(function(rows) {
+          if(rows.length == 0) {
+            self.jas_clear();
+            self.jas_push(self.ra);
+          } else {
+            self.params.push(rows[0]['id']);
+          }
+          self.run();
+        });
+        break;
+      }
+      case actions.verify_back: {
+        var back = this.params.pop();
+        if([0, '0', 'n', 'N', '否', '不是'].indexOf(back) !== -1) {
+          this.params.push(0);
+        } else if([1, '1', 'y', 'Y', '是'].indexOf(back) !== -1) {
+          this.params.push(1);
+        } else {
+          self.jas_clear();
+          self.jas_push(self.ra);
+        }
+        self.run();
+        break;
+      }
+      case actions.verify_stop: {
+        var stop_name = self.params.pop();
+        var back = self.params.pop();
+        var route_id = self.params[self.params.length - 1];
+        bus.search.stop(stop_name, back, route_id).then(function(rows) {
+          if(rows.length == 0) {
+            self.puts(responses.verify_stop);
+            self.params.push(back);
+            self.jas_clear();
+            self.jas_push(self.ra);
+          } else {
+            self.params.push(rows[0]['id']);
+          }
+          self.run();
+        });
+        break;
+      }
+      case actions.verify_time: {
+        var time = self.params.pop().split('-');
+        var fail = 0;
+        if(time.length == 2) {
+          time.forEach(function(elem) {
+            if(!/([0-1][0-9]|2[0-3])[0-5][0-9]/.test(elem)) {
+              fail = 1;
+            }
+          });
+        } else {
+          fail = 1;
+        }
+        if(fail == 1) {
+          self.puts(responses.verify_time);
+          self.jas_clear();
+        } else {
+          self.params.push(time);
+        }
+        self.run();
+        break;
+      }
+      case actions.verify_interval: {
+        var interval = parseInt(params.pop());
+        if(interval < 1) {
+          self.puts(responses.verify_interval);
+          self.jas_clear();
+          self.jas_push(self.ra);
+        }
+        self.run();
         break;
       }
       case actions.ask_param: {
-        this.params.push(in_queue[this.mid].shift());
-        this.run();
+        self.params.push(in_queue[self.mid].shift());
+        self.run();
         break;
       }
       default:
@@ -257,7 +351,7 @@ Member.prototype.run = function() {
     }
   } catch(err) {
     console.log(err)
-    this.jas_push(actions.welcome);
-    this.run();
+    self.jas_push(actions.welcome);
+    self.run();
   }
 };

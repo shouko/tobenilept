@@ -278,7 +278,7 @@ Member.prototype.run = function() {
         break;
       }
       case actions.verify_back: {
-        var back = this.params.pop();
+        var back = self.params.pop();
         if([0, '0', 'n', 'N', '否', '不是'].indexOf(back) !== -1) {
           this.params.push(0);
         } else if([1, '1', 'y', 'Y', '是'].indexOf(back) !== -1) {
@@ -329,7 +329,7 @@ Member.prototype.run = function() {
         break;
       }
       case actions.verify_interval: {
-        var interval = parseInt(params.pop());
+        var interval = parseInt(self.params.pop());
         if(interval < 1) {
           self.puts(responses.verify_interval);
           self.jas_clear();

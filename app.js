@@ -66,7 +66,7 @@ function schedule_fetch(wait) {
   setTimeout(function() {
     fetch().then(function(length) {
       console.log(Date(), 'fetched', length);
-			var next_fetch = 100;
+      var next_fetch = 100;
       if(length == 0) {
         next_fetch = 500;
       }
@@ -118,12 +118,30 @@ Member.prototype.puts = function(msg) {
 
 Member.prototype.query = function() {
   // fetch subscription record
-  this.puts("以下是你的訂閱紀錄");
+  sequelize.query(
+    'SELECT * FROM `subscription` WHERE `mid` = :mid', {
+      replacements: {
+        mid: this.mid
+      },
+      type: sequelize.QueryTypes.SELECT
+    }
+  ).then(function(rows) {
+    this.puts("以下是你的訂閱紀錄");
+  });
+  this.params = [];
 };
 
 Member.prototype.add = function() {
   // add subscription to db
   this.puts('您的訂閱已完成');
+};
+
+Member.prototype.edit = function() {
+  this.params = [];
+};
+
+Member.prototype.delete = function() {
+  this.params = [];
 };
 
 Member.prototype.jas_push = function(action) {
@@ -179,7 +197,6 @@ Member.prototype.run = function() {
       }
       case actions.query: {
         this.query();
-        this.params = [];
         break;
       }
       case actions.modify: {
@@ -215,7 +232,6 @@ Member.prototype.run = function() {
       case actions.modify_proceed: {
         // do dome modify job with params[2]
         this.puts(responses.succeed_modify);
-        this.params = [];
         break;
       }
       case actions.delete: {
@@ -228,7 +244,6 @@ Member.prototype.run = function() {
       case actions.delete_proceed: {
         // do dome delete job with params[1]
         this.puts(responses.succeed_modify);
-        this.params = [];
         break;
       }
       case actions.ask_param: {

@@ -8,7 +8,7 @@ function fetch_json_gz(url) {
 		child_process.exec(
 			[shellescape(['curl', '-L', url]), '|', 'gunzip -c'].join(' '),
 			{
-				maxBuffer: 2000 * 1024
+				maxBuffer: 10 * 1024 * 1024
 			},
 			function(err, stdout, stderr) {
 				resolve(JSON.parse(stdout));

@@ -1,4 +1,4 @@
-var main_menu: "歡迎使用臺北市政府 LINE 訂閱公車到站資訊服務\n";
+var main_menu = "歡迎使用臺北市政府 LINE 訂閱公車到站資訊服務\n";
 main_menu += ["訂閱公車資訊", "查詢訂閱紀錄", "更改訂閱紀錄", "刪除訂閱紀錄"].map(function(element, index, array) {
   var option_num = index + 1;
   return element + ":請輸入 " + option_num;

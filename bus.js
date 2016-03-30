@@ -71,7 +71,7 @@ Bus.prototype.fetch = {
 			fetch_json_gz(data_sets.estimate).then(function(data) {
 				new Promise.all(data.BusInfo.map(function(row) {
 					return this.sequelize.query(
-						'UPDATE `stop` SET `estimate` = :estimate WHERE id = :id', {
+						'UPDATE `stop` SET `estimate` = :estimate WHERE `id` = :id', {
 							replacements: {
 								id: row.StopID,
 								estimate: row.EstimateTime
@@ -82,6 +82,30 @@ Bus.prototype.fetch = {
 				})).then(resolve);
 			});
 		});
+	}
+};
+
+Bus.prototype.search = {
+	route: function(name) {
+		return sequelize.query(
+      'SELECT * FROM `route` WHERE `name` = :name', {
+        replacements: {
+          name: name
+        },
+        type: sequelize.QueryTypes.SELECT
+      }
+    );
+	},
+	stop: function(name, route_id) {
+		return sequelize.query(
+			'SELECT * FROM `stop` WHERE `name` = :name AND `route_id` = :route_id', {
+				replacements: {
+					name: name,
+					route_id: route_id
+				},
+				type: sequelize.QueryTypes.SELECT
+			}
+		);
 	}
 };
 

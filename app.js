@@ -186,10 +186,7 @@ Member.prototype.run = function() {
       }
       case actions.add_route: {
         self.puts(responses.ask_route);
-        self.jas_push(actions.add_back);
-        self.jas_push(actions.verify_route);
-        self.jas_push(actions.ask_param);
-        self.ra_set(actions.add_route);
+				self.beq(actions.verify_route, actions.add_back, actions.add_route);
         break;
       }
       case actions.add_back: {

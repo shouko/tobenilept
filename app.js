@@ -155,6 +155,11 @@ Member.prototype.jas_clear = function() {
   this.jas = [];
 }
 
+Member.prototype.jas_set = function(action) {
+	this.jas_clear();
+	this.jas_push(action);
+}
+
 Member.prototype.ra_set = function(action) {
   this.ra = parseInt(action);
 }
@@ -268,8 +273,7 @@ Member.prototype.run = function() {
       case actions.verify_route: {
         bus.search.route(self.params.pop()).then(function(rows) {
           if(rows.length == 0) {
-            self.jas_clear();
-            self.jas_push(self.ra);
+            self.jas_set(self.ra);
           } else {
             self.params.push(rows[0]['id']);
           }
@@ -284,8 +288,7 @@ Member.prototype.run = function() {
         } else if([1, '1', 'y', 'Y', '是'].indexOf(back) !== -1) {
           this.params.push(1);
         } else {
-          self.jas_clear();
-          self.jas_push(self.ra);
+          self.jas_set(self.ra);
         }
         self.run();
         break;
@@ -298,8 +301,7 @@ Member.prototype.run = function() {
           if(rows.length == 0) {
             self.puts(responses.verify_stop);
             self.params.push(back);
-            self.jas_clear();
-            self.jas_push(self.ra);
+            self.jas_set(self.ra);
           } else {
             self.params.push(rows[0]['id']);
           }
@@ -321,7 +323,7 @@ Member.prototype.run = function() {
         }
         if(fail == 1) {
           self.puts(responses.verify_time);
-          self.jas_clear();
+          self.jas_set(self.ra)
         } else {
           self.params.push(time);
         }
@@ -332,8 +334,7 @@ Member.prototype.run = function() {
         var interval = parseInt(self.params.pop());
         if(interval < 1) {
           self.puts(responses.verify_interval);
-          self.jas_clear();
-          self.jas_push(self.ra);
+          self.jas_set(self.ra);
         }
         self.run();
         break;

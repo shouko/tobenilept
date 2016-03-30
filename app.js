@@ -160,10 +160,10 @@ Member.prototype.ra_set = function(action) {
 }
 
 Member.prototype.beq = function(verify, success, fail) {
-  self.jas_push(success);
-  self.jas_push(verify);
-  self.jas_push(actions.ask_param);
-  self.ra_set(fail);
+  this.jas_push(success);
+  this.jas_push(verify);
+  this.jas_push(actions.ask_param);
+  this.ra_set(fail);
 }
 
 Member.prototype.run = function() {

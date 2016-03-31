@@ -340,6 +340,8 @@ Member.prototype.run = function() {
         if(interval < 1) {
           self.puts(responses.verify_interval);
           self.jas_set(self.ra);
+        } else {
+          self.params.push(interval);
         }
         self.run();
         break;

@@ -121,23 +121,38 @@ Member.prototype.puts = function(msg) {
 
 Member.prototype.query = function() {
   // fetch subscription record
+  var self = this;
   sequelize.query(
-    'SELECT * FROM `subscription` WHERE `mid` = :mid', {
+    'SELECT `route`.`name` as `route_name`, `stop`.`back` as `back`, `stop`.`name` as `stop_name`, `subscription`.`start` as `start`, `subscription`.`end` as `end`, `subscription`.`interval` as `interval` FROM `subscription`, `stop`, `route` WHERE `subscription`.`mid` = :mid AND `stop`.`id` = `subscription`.`stop_id` AND `stop`.`route_id` = `route`.`id`', {
       replacements: {
         mid: this.mid
       },
       type: sequelize.QueryTypes.SELECT
     }
   ).then(function(rows) {
-    this.puts("以下是你的訂閱紀錄");
+    self.puts("以下是你的訂閱紀錄");
   });
   this.params = [];
 };
 
 Member.prototype.add = function() {
   // add subscription to db
-  console.log("params", this.params);
-  this.params = [];
+  var self = this;
+  console.log("params", self.params);
+  sequelize.query(
+    'INSERT INTO `subscription` (`mid`, `stop_id`, `start`, `end`, `inter`) VALUES(:mid, :stop_id, :start, :end, :inter)', {
+      replacements: {
+        mid: self.mid,
+        stop_id: self.params[2],
+        start: self.params[3][0],
+        end: self.params[3][1],
+        inter: self.params[4]
+      }
+    }
+  ).then(function() {
+    self.puts(responses.succeed_add);
+  })
+  self.params = [];
 };
 
 Member.prototype.edit = function() {
@@ -219,7 +234,6 @@ Member.prototype.run = function() {
       }
       case actions.add_proceed: {
         // proceed add action with params
-				self.puts(responses.suceed_add);
         self.add();
         break;
       }
@@ -259,7 +273,7 @@ Member.prototype.run = function() {
       }
       case actions.modify_proceed: {
         // do dome modify job with params[2]
-				self.puts(responses.succeed_modify);
+        self.puts(responses.succeed_modify);
         self.modify();
         break;
       }
@@ -271,7 +285,7 @@ Member.prototype.run = function() {
       }
       case actions.delete_proceed: {
         // do dome delete job with params[1]
-				self.puts(responses.succeed_modify);
+        self.puts(responses.succeed_modify);
         self.delete();
         break;
       }

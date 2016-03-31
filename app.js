@@ -382,7 +382,10 @@ Member.prototype.run = function() {
           self.puts(responses.verify_time);
           self.jas_set(self.ra)
         } else {
-          self.params.push(time);
+          self.params.push(time.map(function(str) {
+            var val = parseInt(str);
+            return parseInt(val / 100) * 60 + (val % 100);
+          }));
         }
         self.run();
         break;

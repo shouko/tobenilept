@@ -81,6 +81,7 @@ schedule_fetch(0);
 
 function Member(mid) {
   this.mid = mid;
+  this.items = 0;
   this.params = [];
   this.ra = 0;
   this.jas = new Array();
@@ -130,6 +131,7 @@ Member.prototype.query = function() {
       type: sequelize.QueryTypes.SELECT
     }
   ).then(function(rows) {
+    self.items = rows.length;
     self.puts(["以下是你的訂閱紀錄：", rows.map(function(element, index, array) {
       return [
         index + 1,
@@ -142,6 +144,23 @@ Member.prototype.query = function() {
   });
   this.params = [];
 };
+
+Memebers.prototype.item_count = function() {
+  var self = this;
+  return new Promise(function(resolve, reject) {
+    sequelize.query(
+      'SELECT count(*) as count FROM `subscription` WHERE `mid` = :mid GROUP BY `mid`', {
+        replacements: {
+          mid: self.mid
+        },
+        type: sequelize.QueryTypes.SELECT
+      }
+    ).then(function(results) {
+      self.items = results[0]['count'];
+      resolve(self.items);
+    })
+  })
+}
 
 Member.prototype.add = function() {
   // add subscription to db
@@ -375,6 +394,15 @@ Member.prototype.run = function() {
           self.jas_set(self.ra);
         } else {
           self.params.push(interval);
+        }
+        self.run();
+        break;
+      }
+      case actions.verify_item: {
+        var item = parseInt(self.params.pop());
+        if(item < 1 || item > items) {
+          self.puts(response.verify_item);
+          self.jas_set(self.ra);
         }
         self.run();
         break;

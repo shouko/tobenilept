@@ -219,8 +219,8 @@ Member.prototype.run = function() {
       }
       case actions.add_proceed: {
         // proceed add action with params
+				self.puts(responses.suceed_add);
         self.add();
-        self.puts(responses.suceed_add);
         break;
       }
       case actions.query: {
@@ -259,8 +259,8 @@ Member.prototype.run = function() {
       }
       case actions.modify_proceed: {
         // do dome modify job with params[2]
+				self.puts(responses.succeed_modify);
         self.modify();
-        self.puts(responses.succeed_modify);
         break;
       }
       case actions.delete: {
@@ -271,8 +271,8 @@ Member.prototype.run = function() {
       }
       case actions.delete_proceed: {
         // do dome delete job with params[1]
+				self.puts(responses.succeed_modify);
         self.delete();
-        self.puts(responses.succeed_modify);
         break;
       }
       case actions.verify_route: {

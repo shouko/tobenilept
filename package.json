@@ -19,6 +19,7 @@
   "dependencies": {
     "bluebird": "^3.3.4",
     "mysql": "^2.10.2",
+    "node-schedule": "^1.1.0",
     "request": "^2.69.0",
     "sequelize": "^3.19.3",
     "shell-escape": "^0.2.0",

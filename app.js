@@ -155,7 +155,8 @@ Member.prototype.add = function() {
         start: self.params[3][0],
         end: self.params[3][1],
         interval: self.params[4]
-      }
+      },
+      type: sequelize.QueryTypes.INSERT
     }
   ).then(function() {
     self.puts(responses.succeed_add);
@@ -169,7 +170,19 @@ Member.prototype.edit = function() {
 };
 
 Member.prototype.delete = function() {
-  console.log("params", this.params);
+  var self = this;
+  console.log("params", self.params);
+  sequelize.query(
+    'DELETE FROM `subscription` WHERE `id` IN (SELECT `id` FROM `subscription` WHERE `mid` = :mid LIMIT :limit,1)', {
+      replacements: {
+        mid: self.mid,
+        limit: self.params[1]
+      }
+    },
+    type: sequelize.QueryTypes.DELETE
+  ).then(function() {
+    self.pust(responses.suceed_delete);
+  })
   this.params = [];
 };
 
@@ -281,7 +294,6 @@ Member.prototype.run = function() {
       }
       case actions.modify_proceed: {
         // do dome modify job with params[2]
-        self.puts(responses.succeed_modify);
         self.modify();
         break;
       }
@@ -293,7 +305,6 @@ Member.prototype.run = function() {
       }
       case actions.delete_proceed: {
         // do dome delete job with params[1]
-        self.puts(responses.succeed_modify);
         self.delete();
         break;
       }

@@ -130,7 +130,15 @@ Member.prototype.query = function() {
       type: sequelize.QueryTypes.SELECT
     }
   ).then(function(rows) {
-    self.puts("以下是你的訂閱紀錄");
+    self.puts(["以下是你的訂閱紀錄：", rows.map(function(element, index, array) {
+      return [
+        index + 1,
+        "公車路號：" + element.route_name + "(" + (back == 0 ? "去" : "返") + ")",
+        "到達站名：" + element.stop_name,
+        "通知時間：" + element.start + '-' + element.end,
+        "通知間隔：" + element.interval,
+      ].join("\n");
+    }).join("\n")].join("\n"));
   });
   this.params = [];
 };
@@ -140,13 +148,13 @@ Member.prototype.add = function() {
   var self = this;
   console.log("params", self.params);
   sequelize.query(
-    'INSERT INTO `subscription` (`mid`, `stop_id`, `start`, `end`, `inter`) VALUES(:mid, :stop_id, :start, :end, :inter)', {
+    'INSERT INTO `subscription` (`mid`, `stop_id`, `start`, `end`, `interval`) VALUES(:mid, :stop_id, :start, :end, :interval)', {
       replacements: {
         mid: self.mid,
         stop_id: self.params[2],
         start: self.params[3][0],
         end: self.params[3][1],
-        inter: self.params[4]
+        interval: self.params[4]
       }
     }
   ).then(function() {

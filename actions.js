@@ -16,5 +16,6 @@ module.exports = {
   verify_stop: 202,
   verify_time: 203,
   verify_interval: 204,
-  verify_item: 205
+  verify_item: 205,
+  verify_welcome: 209
 };

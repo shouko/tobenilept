@@ -232,8 +232,7 @@ Member.prototype.run = function() {
       case actions.welcome: {
         self.gets();
         self.puts(responses.main_menu);
-        self.jas_push(actions.welcome_navigate);
-        self.jas_push(actions.ask_param);
+        self.beq(actions.verify_welcome, actions.welcome_nagivate, actions.welcome);
         break;
       }
       case actions.welcome_navigate: {
@@ -366,6 +365,18 @@ Member.prototype.run = function() {
         if(item < 1 || item > items) {
           self.puts(response.verify_item);
           self.jas_set(self.ra);
+        } else {
+          self.params.push(item);
+        }
+        self.run();
+        break;
+      }
+      case actions.verify_welcome: {
+        var selection = parseInt(self.params.pop());
+        if(selection >= 1 && selection <= 3) {
+          self.jas_set(self.ra);
+        } else {
+          self.params.push(selection);
         }
         self.run();
         break;

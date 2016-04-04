@@ -1,9 +1,9 @@
-var config = require('./config');
+var config = require('./inc/config');
 var request = require('request');
 var schedule = require('node-schedule');
 var Promise = require('bluebird');
 var Sequelize = require('sequelize');
-var Bus = require('./bus');
+var Bus = require('./inc/bus');
 var sequelize = new Sequelize(config.db.url);
 var bus = new Bus(sequelize);
 

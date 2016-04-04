@@ -1,10 +1,10 @@
-var config = require('./config');
-var actions = require('./actions');
-var responses = require('./responses');
+var config = require('./inc/config');
+var actions = require('./inc/actions');
+var responses = require('./inc/responses');
 var request = require('request');
 var Promise = require('bluebird');
 var Sequelize = require('sequelize');
-var Bus = require('./bus');
+var Bus = require('./inc/bus');
 var sequelize = new Sequelize(config.db.url);
 var bus = new Bus(sequelize);
 

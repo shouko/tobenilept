@@ -411,8 +411,13 @@ Member.prototype.run = function() {
         break;
       }
       case actions.ask_param: {
-        self.params.push(self.gets());
-        self.run();
+        var input = self.gets();
+        if(['x', 'X', '取消'].indexOf(input) == -1) {
+          throw "USER_ABORT";
+        } else {
+          self.params.push(input);
+          self.run();
+        }
         break;
       }
       default:

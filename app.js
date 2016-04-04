@@ -235,7 +235,7 @@ Member.prototype.run = function() {
     console.log(Date(), self.mid, self.jas[self.jas.length - 1], self.jas[self.jas.length - 2]);
     switch(self.jas.pop()) {
       case actions.welcome: {
-        in_queue[self.mid].shift();
+        self.gets();
         self.puts(responses.main_menu);
         self.jas_push(actions.welcome_navigate);
         self.jas_push(actions.ask_param);
@@ -411,7 +411,7 @@ Member.prototype.run = function() {
         break;
       }
       case actions.ask_param: {
-        self.params.push(in_queue[self.mid].shift());
+        self.params.push(self.gets());
         self.run();
         break;
       }

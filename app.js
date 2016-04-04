@@ -7,11 +7,6 @@ var Sequelize = require('sequelize');
 var Bus = require('./bus');
 var sequelize = new Sequelize(config.db.url);
 var bus = new Bus(sequelize);
-var modify_menu = {
-  1: 31,
-  2: 32,
-  3: 33
-};
 
 var in_queue = new Array();
 var members = new Array();
@@ -279,41 +274,6 @@ Member.prototype.run = function() {
       }
       case actions.query: {
         self.query();
-        break;
-      }
-      case actions.modify: {
-        self.query();
-        self.jas_push(actions.modify_item);
-        self.run();
-        break;
-      }
-      case actions.modify_item: {
-        self.puts(responses.ask_modify);
-        self.beq(actions.verify_item, actions.modify_navigate, actions.modify_item);
-      }
-      case actions.modify_navigate: {
-        self.jas_push(modify_menu[self.params[1]]);
-        self.run();
-        break;
-      }
-      case actions.modify_stop: {
-        self.puts(responses.ask_stop)
-        self.beq(actions.verify_stop, actions.modify_proceed, actions.modify_stop);
-        break;
-      }
-      case actions.modify_time: {
-        self.puts(responses.ask_time)
-        self.beq(actions.verify_time, actions.modify_proceed, actions.modify_time);
-        break;
-      }
-      case actions.modify_interval: {
-        self.puts(responses.ask_interval)
-        self.beq(actions.verify_interval, actions.modify_proceed, actions.modify_interval);
-        break;
-      }
-      case actions.modify_proceed: {
-        // do dome modify job with params[2]
-        self.modify();
         break;
       }
       case actions.delete: {

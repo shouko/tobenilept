@@ -101,11 +101,10 @@ Bus.prototype.search = {
   },
   stop: function(offset, back, route_id) {
     return sequelize.query(
-      'SELECT * FROM `stop` WHERE `route_id` = :route_id AND `back` = :back ORDER BY `seq` ASC LIMIT :offset,1', {
+      'SELECT * FROM `stop` WHERE `route_id` = :route_id AND `back` = :back ORDER BY `seq` ASC LIMIT ' + parseInt(offset) + ',1', {
         replacements: {
           back: back,
-          route_id: route_id,
-          offset: offset
+          route_id: route_id
         },
         type: sequelize.QueryTypes.SELECT
       }

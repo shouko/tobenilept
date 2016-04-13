@@ -187,10 +187,9 @@ Member.prototype.delete = function() {
   var self = this;
   console.log("params", self.params);
   sequelize.query(
-    'DELETE FROM `subscription` WHERE `id` IN (SELECT `id` FROM `subscription` WHERE `mid` = :mid LIMIT :limit,1)', {
+    'DELETE FROM `subscription` WHERE `id` IN (SELECT `id` FROM `subscription` WHERE `mid` = :mid LIMIT ' + parseInt(self.params[1]) + ',1)', {
       replacements: {
-        mid: self.mid,
-        limit: self.params[1]
+        mid: self.mid
       },
       type: sequelize.QueryTypes.DELETE
     }

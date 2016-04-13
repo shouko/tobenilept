@@ -140,7 +140,7 @@ Member.prototype.query = function() {
   this.params = [];
 };
 
-Memebers.prototype.item_count = function() {
+Member.prototype.item_count = function() {
   var self = this;
   return new Promise(function(resolve, reject) {
     sequelize.query(

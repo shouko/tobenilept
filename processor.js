@@ -232,7 +232,7 @@ Member.prototype.run = function() {
       case actions.welcome: {
         self.gets();
         self.puts(responses.main_menu);
-        self.beq(actions.verify_welcome, actions.welcome_nagivate, actions.welcome);
+        self.beq(actions.verify_welcome, actions.welcome_navigate, actions.welcome);
         break;
       }
       case actions.welcome_navigate: {

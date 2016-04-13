@@ -195,17 +195,18 @@ Member.prototype.delete = function() {
       type: sequelize.QueryTypes.DELETE
     }
   ).then(function() {
-    self.pust(responses.suceed_delete);
+    self.puts(responses.suceed_delete);
   })
   this.params = [];
 };
 
 Member.prototype.stop_list = function() {
+  var self = this;
   bus.list.stop(this.params[this.params.length - 1], this.params[this.params.length - 2]).then(function(list) {
     var result = list.map(function(element, index, array) {
       return index + ": " + element.name;
     });
-    this.puts([result.join("\n"), responses.ask_stop].join("\n\n"));
+    self.puts([result.join("\n"), responses.ask_stop].join("\n\n"));
   });
 }
 

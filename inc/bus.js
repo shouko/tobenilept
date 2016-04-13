@@ -99,11 +99,25 @@ Bus.prototype.search = {
       }
     );
   },
-  stop: function(name, back, route_id) {
+  stop: function(offset, back, route_id) {
     return sequelize.query(
-      'SELECT * FROM `stop` WHERE `name` = :name AND `route_id` = :route_id AND `back` = :back', {
+      'SELECT * FROM `stop` WHERE `route_id` = :route_id AND `back` = :back ORDER BY `seq` ASC LIMIT :offset,1', {
         replacements: {
-          name: name,
+          back: back,
+          route_id: route_id,
+          offset: offset
+        },
+        type: sequelize.QueryTypes.SELECT
+      }
+    );
+  }
+};
+
+Bus.prototype.list = {
+  stop: function(back, route_id) {
+    return sequelize.query(
+      'SELECT `name` FROM `stop` WHERE `route_id` = :route_id AND `back` = :back ORDER BY `seq` ASC', {
+        replacements: {
           back: back,
           route_id: route_id
         },

@@ -200,6 +200,15 @@ Member.prototype.delete = function() {
   this.params = [];
 };
 
+Member.prototype.stop_list = function() {
+  bus.list.stop().then(function(list) {
+    var result = list.map(function(element, index, array) {
+      return index + ": " + element.name;
+    });
+    this.puts([result.join("\n"), responses.ask_stop].join("\n\n"));
+  });
+}
+
 Member.prototype.jas_push = function(action) {
   this.jas.push(parseInt(action));
 };
@@ -252,7 +261,7 @@ Member.prototype.run = function() {
         break;
       }
       case actions.add_stop: {
-        self.puts(responses.ask_stop);
+        self.stop_list();
         self.beq(actions.verify_stop, actions.add_time, actions.add_stop);
         break;
       }
@@ -310,10 +319,10 @@ Member.prototype.run = function() {
         break;
       }
       case actions.verify_stop: {
-        var stop_name = self.params.pop();
+        var offset = self.params.pop();
         var back = self.params.pop();
         var route_id = self.params[self.params.length - 1];
-        bus.search.stop(stop_name, back, route_id).then(function(rows) {
+        bus.search.stop(offset, back, route_id).then(function(rows) {
           if(rows.length == 0) {
             self.puts(responses.verify_stop);
             self.params.push(back);

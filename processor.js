@@ -376,7 +376,7 @@ Member.prototype.run = function() {
       }
       case actions.verify_item: {
         var item = parseInt(self.params.pop());
-        if(item < 1 || item > self.items) {
+        if(item < 0 || item => self.items) {
           self.puts(response.verify_item);
           self.jas_set(self.ra);
         } else {

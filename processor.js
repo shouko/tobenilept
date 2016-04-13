@@ -191,9 +191,9 @@ Member.prototype.delete = function() {
       replacements: {
         mid: self.mid,
         limit: self.params[1]
-      }
-    },
-    type: sequelize.QueryTypes.DELETE
+      },
+      type: sequelize.QueryTypes.DELETE
+    }
   ).then(function() {
     self.pust(responses.suceed_delete);
   })

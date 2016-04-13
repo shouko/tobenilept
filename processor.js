@@ -374,9 +374,9 @@ Member.prototype.run = function() {
       case actions.verify_welcome: {
         var selection = parseInt(self.params.pop());
         if(selection >= 1 && selection <= 3) {
-          self.jas_set(self.ra);
-        } else {
           self.params.push(selection);
+        } else {
+          self.jas_set(self.ra);
         }
         self.run();
         break;

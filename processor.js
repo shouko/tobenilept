@@ -84,6 +84,11 @@ function Member(mid) {
   console.log(Date(), "create", mid);
 }
 
+function to_time(minutes) {
+  minutes %= 1440;
+  return parseInt(minutes/60) + ":" + (parseInt(minutes % 60) < 10 ? "0" : "") + parseInt(minutes % 60);
+}
+
 Member.prototype.gets = function() {
   return in_queue[this.mid].shift();
 };
@@ -129,11 +134,11 @@ Member.prototype.query = function() {
     self.items = rows.length;
     self.puts(["以下是你的訂閱紀錄：", rows.map(function(element, index, array) {
       return [
-        index + 1,
+        "#" + index,
         "公車路號：" + element.route_name + "(" + (element.back == 0 ? "去" : "返") + ")",
         "到達站名：" + element.stop_name,
-        "通知時間：" + element.start + '-' + element.end,
-        "通知間隔：" + element.interval,
+        "通知時間：" + to_time(element.start) + '-' + to_time(element.end),
+        "通知間隔：每 " + element.interval + " 分鐘",
       ].join("\n");
     }).join("\n")].join("\n"));
   });

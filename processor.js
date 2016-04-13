@@ -130,7 +130,7 @@ Member.prototype.query = function() {
     self.puts(["以下是你的訂閱紀錄：", rows.map(function(element, index, array) {
       return [
         index + 1,
-        "公車路號：" + element.route_name + "(" + (back == 0 ? "去" : "返") + ")",
+        "公車路號：" + element.route_name + "(" + (element.back == 0 ? "去" : "返") + ")",
         "到達站名：" + element.stop_name,
         "通知時間：" + element.start + '-' + element.end,
         "通知間隔：" + element.interval,

@@ -201,7 +201,7 @@ Member.prototype.delete = function() {
 };
 
 Member.prototype.stop_list = function() {
-  bus.list.stop().then(function(list) {
+  bus.list.stop(self.params[self.params.length - 1], self.params[self.params.length - 2]).then(function(list) {
     var result = list.map(function(element, index, array) {
       return index + ": " + element.name;
     });

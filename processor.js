@@ -199,7 +199,7 @@ Member.prototype.delete = function() {
       type: sequelize.QueryTypes.DELETE
     }
   ).then(function() {
-    self.puts(responses.suceed_delete);
+    self.puts(responses.succeed_delete);
   })
   this.params = [];
 };

@@ -383,7 +383,7 @@ Member.prototype.run = function() {
       }
       case actions.ask_param: {
         var input = self.gets();
-        if(['x', 'X', '取消'].indexOf(input) == -1) {
+        if(['x', 'X', '取消'].indexOf(input) !== -1) {
           throw "USER_ABORT";
         } else {
           self.params.push(input);

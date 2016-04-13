@@ -54,9 +54,10 @@ Bus.prototype.fetch = {
       fetch_json_gz(data_sets.stop).then(function(data) {
         new Promise.all(data.BusInfo.map(function(row) {
           return sequelize.query(
-            'INSERT INTO `stop` (`id`, `name`, `route_id`, `back`) VALUES(:id, :name, :route_id, :back) ON DUPLICATE KEY UPDATE `name` = :name, `route_id` = :route_id, `back` = :back', {
+            'INSERT INTO `stop` (`id`, `seq`, `name`, `route_id`, `back`) VALUES(:id, :seq, :name, :route_id, :back) ON DUPLICATE KEY UPDATE `seq` = :seq, `name` = :name, `route_id` = :route_id, `back` = :back', {
               replacements: {
                 id: row.Id,
+                seq: row.seqNo,
                 name: row.nameZh,
                 route_id: row.routeId,
                 back: row.goBack

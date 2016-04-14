@@ -4,8 +4,10 @@ var schedule = require('node-schedule');
 var Promise = require('bluebird');
 var Sequelize = require('sequelize');
 var Bus = require('./inc/bus');
+var Line = require('./inc/line');
 var sequelize = new Sequelize(config.db.url);
 var bus = new Bus(sequelize);
+var line = new Line(config.line.ChannelToken);
 
 function is_int(val) {
   return (val === parseInt(val));
@@ -25,6 +27,26 @@ var j = schedule.scheduleJob('0 * * * * *', function() {
     var jobs = rows.map(function(row) {
       if(is_int((now - row.start) / row.interval)) {
         return now;
+        var msg = "您所訂閱的 " + row.route_name + " 公車，";
+        switch(row.estimate) {
+          case -1:
+            msg += "尚未發車";
+            break;
+          case -2:
+            msg += "交管不停靠";
+            break;
+          case -3:
+            msg += "末班車已過";
+            break;
+          case -4:
+            msg += "今日未營運";
+            break;
+          default:
+            msg += "即將在 " + row.estimate + "分鐘後到達";
+            break;
+        }
+        msg += " " + row.stop_name + " 站";
+        line.send(row.mid, msg);
       }
     });
     console.log(jobs);

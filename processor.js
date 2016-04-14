@@ -5,8 +5,10 @@ var request = require('request');
 var Promise = require('bluebird');
 var Sequelize = require('sequelize');
 var Bus = require('./inc/bus');
+var Line = require('./inc/line');
 var sequelize = new Sequelize(config.db.url);
 var bus = new Bus(sequelize);
+var line = new Line(config.line.ChannelToken);
 
 var in_queue = new Array();
 var members = new Array();
@@ -95,29 +97,7 @@ Member.prototype.gets = function() {
 
 Member.prototype.puts = function(msg) {
   console.log(Date(), 'puts', msg);
-  var data = {
-    to: [ this.mid ],
-    toChannel: 1383378250,
-    eventType: "138311608800106203",
-    content: {
-      contentType: 1,
-      toType: 1,
-      text: msg
-    }
-  };
-  request({
-    method: 'POST',
-    url: 'https://api.line.me/v1/events',
-    headers: {
-      'X-LINE-ChannelToken': config.line.ChannelToken
-    },
-    json: data
-  }, function(err, response, body) {
-    if(err) {
-      console.log(Date(), err, data);
-    }
-    console.log(Date(), body.messageId, body.timestamp);
-  });
+  line.send(this.mid, msg);
 };
 
 Member.prototype.query = function() {

@@ -1,5 +1,4 @@
 var config = require('./inc/config');
-var request = require('request');
 var schedule = require('node-schedule');
 var Promise = require('bluebird');
 var Sequelize = require('sequelize');

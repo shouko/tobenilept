@@ -33,7 +33,6 @@ var j = schedule.scheduleJob('0 * * * * *', function() {
   ).then(function(rows) {
     rows.forEach(function(row) {
       if(is_int((now - row.start) / row.interval)) {
-        return now;
         var msg = "您所訂閱的 " + row.route_name + " 公車，";
         switch(row.estimate) {
           case -1:

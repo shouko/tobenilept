@@ -24,7 +24,7 @@ var j = schedule.scheduleJob('0 * * * * *', function() {
   var now = new Date();
   now = 60 * now.getHours() + now.getMinutes();
   sequelize.query(
-    'SELECT `subscription`.`mid` as `mid`, `route`.`name` as `route_name`, `stop`.`back` as `back`, `stop`.`name` as `stop_name`, `stop`.`estimate` as `estimate`, `subscription`.`start` as `start`, `subscription`.`interval` as `interval` FROM `subscription`, `stop`, `route` WHERE `subscription`.`start` < :now AND `subscription`.`end` > :now AND `stop`.`id` = `subscription`.`stop_id` AND `stop`.`route_id` = `route`.`id`', {
+    'SELECT `subscription`.`mid` as `mid`, `route`.`name` as `route_name`, `stop`.`back` as `back`, `stop`.`name` as `stop_name`, `stop`.`estimate` as `estimate`, `subscription`.`start` as `start`, `subscription`.`interval` as `interval` FROM `subscription`, `stop`, `route` WHERE `subscription`.`start` <= :now AND `subscription`.`end` >= :now AND `stop`.`id` = `subscription`.`stop_id` AND `stop`.`route_id` = `route`.`id`', {
       replacements: {
         now: now
       },
@@ -48,7 +48,7 @@ var j = schedule.scheduleJob('0 * * * * *', function() {
             msg += "今日未營運";
             break;
           default:
-            msg += "即將在 " + row.estimate + "分鐘後到達";
+            msg += "即將在 " + parseInt(row.estimate/60) + "分鐘後到達";
             break;
         }
         msg += " " + row.stop_name + " 站";

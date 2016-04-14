@@ -12,6 +12,14 @@ function is_int(val) {
   return (val === parseInt(val));
 }
 
+var fetch_estimate = schedule.scheduleJob('40 * * * * *', bus.fetch.estimate);
+var fetch_stop = schedule.scheduleJob('* * 4 * * *', bus.fetch.stop);
+var fetch_route = schedule.scheduleJob('* * 4 * * *', bus.fetch.route);
+
+bus.fetch.route();
+bus.fetch.stop();
+bus.fetch.estimate();
+
 var j = schedule.scheduleJob('0 * * * * *', function() {
   var now = new Date();
   now = 60 * now.getHours() + now.getMinutes();
@@ -23,7 +31,7 @@ var j = schedule.scheduleJob('0 * * * * *', function() {
       type: sequelize.QueryTypes.SELECT
     }
   ).then(function(rows) {
-    var jobs = rows.map(function(row) {
+    rows.forEach(function(row) {
       if(is_int((now - row.start) / row.interval)) {
         return now;
         var msg = "您所訂閱的 " + row.route_name + " 公車，";
@@ -48,6 +56,5 @@ var j = schedule.scheduleJob('0 * * * * *', function() {
         line.send(row.mid, msg);
       }
     });
-    console.log(jobs);
   });
 });

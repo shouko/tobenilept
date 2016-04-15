@@ -72,17 +72,22 @@ Bus.prototype.fetch = {
   estimate: function() {
     return new Promise(function(resolve, reject) {
       fetch_json_gz(data_sets.estimate).then(function(data) {
-        new Promise.all(data.BusInfo.map(function(row) {
-          return sequelize.query(
-            'UPDATE `stop` SET `estimate` = :estimate WHERE `id` = :id', {
-              replacements: {
-                id: row.StopID,
-                estimate: row.EstimateTime
-              },
-              type: sequelize.QueryTypes.UPDATE
-            }
-          );
-        })).then(resolve);
+        sequelize.transaction().then(function(t) {
+          new Promise.all(data.BusInfo.map(function(row) {
+            return sequelize.query(
+              'UPDATE `stop` SET `estimate` = :estimate WHERE `id` = :id', {
+                replacements: {
+                  id: row.StopID,
+                  estimate: row.EstimateTime
+                },
+                type: sequelize.QueryTypes.UPDATE,
+                transaction: t
+              }
+            );
+          })).then(function() {
+            return t.commit();
+          });
+        }).then(resolve, reject);
       });
     });
   }

@@ -11,6 +11,8 @@ if (cluster.isMaster) {
 } else {
   var config = require('./inc/config');
   var schedule = require('node-schedule');
+  var Sequelize = require('sequelize');
+  var Bus = require('./inc/bus');
   var sequelize = new Sequelize(config.db.url);
   var bus = new Bus(sequelize);
 

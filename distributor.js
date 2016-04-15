@@ -32,7 +32,7 @@ if (cluster.isMaster) {
     var now = new Date();
     now = 60 * now.getHours() + now.getMinutes();
     sequelize.query(
-      'SELECT `subscription`.`mid` as `mid`, `route`.`name` as `route_name`, `stop`.`back` as `back`, `stop`.`name` as `stop_name`, `stop`.`estimate` as `estimate`, `subscription`.`start` as `start`, `subscription`.`interval` as `interval` FROM `subscription`, `stop`, `route` WHERE (`subscription`.`start` <= `subscription`.`end` AND (`subscription`.`start` <= :now AND `subscription`.`end` >= :now)) OR (`subscription`.`start` < `subscription`.`end` AND (`subscription`.`start` >= :now OR `subscription`.`end` <= :now)) AND `stop`.`id` = `subscription`.`stop_id` AND `stop`.`route_id` = `route`.`id`', {
+      'SELECT `subscription`.`mid` as `mid`, `route`.`name` as `route_name`, `stop`.`back` as `back`, `stop`.`name` as `stop_name`, `stop`.`estimate` as `estimate`, `subscription`.`start` as `start`, `subscription`.`interval` as `interval` FROM `subscription`, `stop`, `route` WHERE  `stop`.`id` = `subscription`.`stop_id` AND `stop`.`route_id` = `route`.`id` AND ((`subscription`.`start` <= :now AND `subscription`.`end` >= :now) OR (`subscription`.`start` > `subscription`.`end` AND (`subscription`.`start` >= :now XOR `subscription`.`end` <= :now)))', {
         replacements: {
           now: now
         },

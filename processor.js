@@ -1,14 +1,19 @@
 var cluster = require('cluster');
+var logger = require('./inc/logger')('logs/processor.log');
 
 if (cluster.isMaster) {
-  console.log(new Date(), "Spawning worker...");
+  logger.log('info', "Spawning worker...");
   cluster.fork();
   cluster.on('exit', function (worker) {
-    console.error(new Date(), "Worker", worker.pid, "died");
+    logger.log('error', "died " + worker.pid);
     var newWorker = cluster.fork();
-    console.log(new Date(), "Spawning new worker", newWorker.pid);
+    logger.log('info', "spawn " + newWorker.pid);
   });
 } else {
+  process.on('uncaughtException', function (err) {
+    logger.log('error', err.stack);
+    process.exit();
+  });
   var config = require('./inc/config');
   var actions = require('./inc/actions');
   var responses = require('./inc/responses');
@@ -38,7 +43,7 @@ if (cluster.isMaster) {
           new Promise(function(resolve, reject) {
             if(messages.length > 0) {
               fetched = messages[messages.length - 1].id;
-              console.log("max fetched id", fetched);
+              logger.log('info', "msg_fetched " + fetched);
               sequelize.query(
                 'UPDATE `message` SET `done` = 1 WHERE `id` <= :id', {
                   replacements: {
@@ -74,7 +79,7 @@ if (cluster.isMaster) {
   function schedule_fetch(wait) {
     setTimeout(function() {
       fetch().then(function(length) {
-        console.log(Date(), 'fetched', length);
+        logger.log('msg_fetched', length);
         var next_fetch = 100;
         if(length == 0) {
           next_fetch = 500;
@@ -93,7 +98,7 @@ if (cluster.isMaster) {
     this.ra = 0;
     this.jas = new Array();
     this.jas_push(actions.welcome);
-    console.log(Date(), "create", mid);
+    this.log('verbose', 'member_create', '');
   }
 
   function to_time(minutes) {
@@ -101,12 +106,16 @@ if (cluster.isMaster) {
     return parseInt(minutes/60) + ":" + (parseInt(minutes % 60) < 10 ? "0" : "") + parseInt(minutes % 60);
   }
 
+  Member.prototype.log = function(level, title, msg) {
+    logger.log(level, ['member', title, this.mid, (['string', 'number'].indexOf(typeof(msg)) == -1 ? JSON.stringify(msg) : msg)].join(' '));
+  }
+
   Member.prototype.gets = function() {
     return in_queue[this.mid].shift();
   };
 
   Member.prototype.puts = function(msg) {
-    console.log(Date(), 'puts', msg);
+    logger.log('verbose', 'puts', msg);
     line.send(this.mid, msg);
   };
 
@@ -155,7 +164,7 @@ if (cluster.isMaster) {
   Member.prototype.add = function() {
     // add subscription to db
     var self = this;
-    console.log("params", self.params);
+    self.log('verbose', 'add', self.params);
     sequelize.query(
       'INSERT INTO `subscription` (`mid`, `stop_id`, `start`, `end`, `interval`) VALUES(:mid, :stop_id, :start, :end, :interval)', {
         replacements: {
@@ -174,13 +183,13 @@ if (cluster.isMaster) {
   };
 
   Member.prototype.edit = function() {
-    console.log("params", this.params);
+    this.log('verbose', 'edit', this.params);
     this.params = [];
   };
 
   Member.prototype.delete = function() {
     var self = this;
-    console.log("params", self.params);
+    self.log('verbose', 'delete', self.params);
     sequelize.query(
       'DELETE FROM `subscription` WHERE `id` IN (SELECT `t`.`id` FROM (SELECT `id` FROM `subscription` WHERE `mid` = :mid LIMIT ' + parseInt(self.params[0]) + ',1) as t)', {
         replacements: {
@@ -231,7 +240,7 @@ if (cluster.isMaster) {
   Member.prototype.run = function() {
     var self = this;
     try {
-      console.log(Date(), self.mid, self.jas[self.jas.length - 1], self.jas[self.jas.length - 2]);
+      self.log('verbose', 'run_jas', self.jas);
       switch(self.jas.pop()) {
         case actions.welcome: {
           self.gets();
@@ -240,7 +249,7 @@ if (cluster.isMaster) {
           break;
         }
         case actions.welcome_navigate: {
-          console.log("params are", self.params);
+          self.log('verbose', 'run_params', self.params);
           self.jas_push(self.params[0]);
           self.run();
           break;
@@ -400,7 +409,7 @@ if (cluster.isMaster) {
           break;
       }
     } catch(err) {
-      console.log(err)
+      self.log('error', err)
       self.params = [];
       self.jas_set(actions.welcome);
       self.run();

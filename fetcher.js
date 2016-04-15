@@ -1,14 +1,20 @@
 var cluster = require('cluster');
+var logger = require('./inc/logger')('logs/fetcher.log');
 
 if (cluster.isMaster) {
-  console.log(new Date(), "Spawning worker...");
+  logger.log('info', "Spawning worker...");
   cluster.fork();
   cluster.on('exit', function (worker) {
-    console.error(new Date(), "Worker", worker.pid, "died");
+    logger.log('error', "died " + worker.pid);
     var newWorker = cluster.fork();
-    console.log(new Date(), "Spawning new worker", newWorker.pid);
+    logger.log('info', "spawn " + newWorker.pid);
   });
 } else {
+  process.on('uncaughtException', function (err) {
+    logger.log('error', err.stack);
+    process.exit();
+  });
+
   var config = require('./inc/config');
   var schedule = require('node-schedule');
   var Sequelize = require('sequelize');

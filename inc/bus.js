@@ -2,6 +2,10 @@ var request = require('request');
 var Promise = require('bluebird');
 var shellescape = require('shell-escape');
 var child_process = require('child_process');
+var Redis = require('redis');
+Promise.promisifyAll(Redis.RedisClient.prototype);
+Promise.promisifyAll(Redis.Multi.prototype);
+var redis = Redis.createClient();
 
 function fetch_json_gz(url) {
   return new Promise(function(resolve, reject) {
@@ -72,22 +76,11 @@ Bus.prototype.fetch = {
   estimate: function() {
     return new Promise(function(resolve, reject) {
       fetch_json_gz(data_sets.estimate).then(function(data) {
-        sequelize.transaction().then(function(t) {
-          new Promise.all(data.BusInfo.map(function(row) {
-            return sequelize.query(
-              'UPDATE `stop` SET `estimate` = :estimate WHERE `id` = :id', {
-                replacements: {
-                  id: row.StopID,
-                  estimate: row.EstimateTime
-                },
-                type: sequelize.QueryTypes.UPDATE,
-                transaction: t
-              }
-            );
-          })).then(function() {
-            return t.commit();
-          });
-        }).then(resolve, reject);
+        new Promise.all(data.BusInfo.map(function(row) {
+          return redis.setAsync(row.StopID, row.EstimateTime);
+        })).then(function() {
+          return resolve();
+        });
       });
     });
   }
@@ -129,6 +122,10 @@ Bus.prototype.list = {
       }
     );
   }
+};
+
+Bus.prototype.estimate = function(stop_id) {
+  return redis.getAsync(stop_id);
 };
 
 module.exports = Bus;

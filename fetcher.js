@@ -26,7 +26,7 @@ if (cluster.isMaster) {
   bus.fetch.stop();
   bus.fetch.estimate();
 
-  var fetch_estimate = schedule.scheduleJob('40 * * * * *', bus.fetch.estimate);
+  var fetch_estimate = schedule.scheduleJob('50 * * * * *', bus.fetch.estimate);
   var fetch_stop = schedule.scheduleJob('* * 4 * * *', bus.fetch.stop);
   var fetch_route = schedule.scheduleJob('* * 4 * * *', bus.fetch.route);
 }

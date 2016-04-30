@@ -26,4 +26,4 @@ Fetches and processes users' input from message queue stored in the database chr
 ## System Requirements
  - **Endpoint**: Web server such as IIS / Apache / nginx with PHP 5.6+
  - **Processor**, **Distributor**: Node.js
- - **Database**: MySQL 5.7+
+ - **Database**: MySQL 5.7+, Redis
